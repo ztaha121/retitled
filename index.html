@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retitled — see your work the way the role does</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+  :root {
+    --window-bg: #FBFBFA;
+    --control-bg: #F1F1EF;
+    --control-bg-focus: #FFFFFF;
+    --ink: #1D1D1F;
+    --ink-soft: #6E6E73;
+    --sage: #5F8768;
+    --sage-bright: #74A17E;
+    --sage-pale: #E4EFE3;
+    --line: rgba(0,0,0,0.08);
+    --red-dot: #FF5F57;
+    --yellow-dot: #FEBC2E;
+    --green-dot: #28C840;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 20px 80px;
+    background: #EDEAE2;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* whimsical blurred wallpaper blobs, macOS-desktop style */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    z-index: 0;
+    animation: drift 22s ease-in-out infinite;
+  }
+  .blob.a { width: 420px; height: 420px; background: #BFE0C2; top: -120px; left: -100px; animation-delay: 0s; }
+  .blob.b { width: 360px; height: 360px; background: #F4D9C6; top: 60%; left: 70%; animation-delay: -6s; }
+  .blob.c { width: 320px; height: 320px; background: #D9DCF0; top: 10%; left: 60%; animation-delay: -12s; }
+  .blob.d { width: 260px; height: 260px; background: #EFE7B8; top: 75%; left: 5%; animation-delay: -18s; }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.06); }
+    66% { transform: translate(-20px, 25px) scale(0.96); }
+  }
+
+  .window {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 760px;
+    background: var(--window-bg);
+    border-radius: 18px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.16), 0 2px 0 rgba(255,255,255,0.6) inset;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.4);
+  }
+
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: linear-gradient(to bottom, #F6F6F4, #ECECE9);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.red { background: var(--red-dot); }
+  .dot.yellow { background: var(--yellow-dot); }
+  .dot.green { background: var(--green-dot); }
+
+  .titlebar-label {
+    flex: 1;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-right: 54px;
+  }
+
+  .content { padding: 40px 44px 44px; }
+
+  @media (max-width: 560px) {
+    .content { padding: 28px 22px 32px; }
+  }
+
+  .app-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, var(--sage-bright), var(--sage));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 8px 18px rgba(95,135,104,0.35);
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-size: clamp(26px, 4vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+    line-height: 1.15;
+  }
+
+  h1 span { color: var(--sage); }
+
+  .sub {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 480px;
+    margin: 0 0 8px;
+  }
+
+  .pill-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--sage);
+    background: var(--sage-pale);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-top: 14px;
+    font-weight: 600;
+  }
+
+  .field-group { margin: 32px 0 28px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 560px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 7px;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: var(--control-bg);
+    border: 1px solid transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    transition: all 0.18s ease;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    background: var(--control-bg-focus);
+    border-color: var(--sage);
+    box-shadow: 0 0 0 4px var(--sage-pale);
+  }
+
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  .hint {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  button.run {
+    position: relative;
+    background: linear-gradient(160deg, var(--sage-bright), var(--sage));
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 13px 26px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(95,135,104,0.35), 0 1px 0 rgba(255,255,255,0.3) inset;
+    transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s ease;
+  }
+
+  button.run:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(95,135,104,0.42); }
+  button.run:active { transform: scale(0.94); }
+  button.run:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .error-box {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #FDEDEA;
+    border: 1px solid #F6C8BE;
+    color: #B8402A;
+    font-size: 13.5px;
+    border-radius: 12px;
+    display: none;
+  }
+
+  .results { margin-top: 40px; }
+
+  .results-heading {
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sage);
+    margin-bottom: 16px;
+  }
+
+  .card-block { margin-bottom: 14px; }
+
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 34px 1fr;
+    align-items: stretch;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+    animation: pop-in 0.45s cubic-bezier(.34,1.56,.64,1) forwards;
+    background: #fff;
+  }
+
+  @keyframes pop-in {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card .side { padding: 16px 18px; font-size: 14px; line-height: 1.55; }
+  .card .before { background: #F7F7F5; color: var(--ink-soft); }
+  .card .after { background: var(--sage-pale); color: var(--ink); }
+
+  .card .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sage);
+    background: #fff;
+    font-size: 15px;
+  }
+
+  @media (max-width: 560px) {
+    .card { grid-template-columns: 1fr; }
+    .card .arrow { padding: 4px 0; transform: rotate(90deg); }
+  }
+
+  .note {
+    margin-top: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: #FAFAF8;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  /* iMessage-style bouncing dots */
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .loading.active { display: flex; }
+  .loading-text { font-size: 13px; color: var(--ink-soft); font-weight: 500; }
+  .typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--sage-pale);
+    padding: 9px 12px;
+    border-radius: 999px;
+  }
+  .typing-bubble span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sage);
+    animation: bounce-dot 1.2s infinite ease-in-out;
+  }
+  .typing-bubble span:nth-child(2) { animation-delay: 0.15s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 22px;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <div class="blob c"></div>
+  <div class="blob d"></div>
+
+  <div style="width:100%; max-width:760px;">
+    <div class="window">
+      <div class="titlebar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="titlebar-label">Retitled</span>
+      </div>
+
+      <div class="content">
+        <div class="app-icon">🔍</div>
+        <h1>Same work. <span>Different lens.</span></h1>
+        <p class="sub">Paste what you actually did. Tell it what role you're aiming for. It reframes your real history in that role's language.</p>
+        <div class="pill-note">✨ no fabricated metrics, ever</div>
+
+        <div class="field-group">
+          <div class="field-row">
+            <div>
+              <label for="currentTitle">Your current title</label>
+              <input type="text" id="currentTitle" placeholder="e.g. IT Support Specialist">
+            </div>
+            <div>
+              <label for="targetTitle">The title you want to be seen as</label>
+              <input type="text" id="targetTitle" placeholder="e.g. Data Analyst">
+            </div>
+          </div>
+
+          <label for="bullets">What you actually did — one line per item</label>
+          <textarea id="bullets" placeholder="Imaged 30+ workstations for new hires
+Handled 5-10 ServiceNow tickets a day
+Was on-site support for 2 company-wide events
+Built a script to auto-check disk space across machines"></textarea>
+          <div class="hint">Paste real bullets from your resume, or just describe your days in plain language.</div>
+        </div>
+
+        <button class="run" id="runBtn">Reframe it</button>
+
+        <div class="loading" id="loading">
+          <div class="typing-bubble"><span></span><span></span><span></span></div>
+          <div class="loading-text">reading between the lines...</div>
+        </div>
+
+        <div class="error-box" id="errorBox"></div>
+
+        <div class="results" id="results" style="display:none;">
+          <div class="results-heading">Before → After</div>
+          <div id="cards"></div>
+        </div>
+      </div>
+    </div>
+    <footer>retitled · built for people whose title undersells their work</footer>
+  </div>
+
+<script>
+const runBtn = document.getElementById('runBtn');
+const loading = document.getElementById('loading');
+const errorBox = document.getElementById('errorBox');
+const results = document.getElementById('results');
+const cardsEl = document.getElementById('cards');
+
+runBtn.addEventListener('click', async () => {
+  const currentTitle = document.getElementById('currentTitle').value.trim();
+  const targetTitle = document.getElementById('targetTitle').value.trim();
+  const bullets = document.getElementById('bullets').value.trim();
+
+  errorBox.style.display = 'none';
+  results.style.display = 'none';
+  cardsEl.innerHTML = '';
+
+  if (!currentTitle || !targetTitle || !bullets) {
+    errorBox.textContent = 'Fill in both titles and at least one line of what you did.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  runBtn.disabled = true;
+  loading.classList.add('active');
+
+  try {
+    const res = await fetch('/api/reframe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentTitle, targetTitle, bullets }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Something went wrong');
+    }
+
+    if (!data.reframed || !data.reframed.length) {
+      errorBox.textContent = 'No results came back. Try adding more detail to your bullets.';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    data.reframed.forEach((item, i) => {
+      const block = document.createElement('div');
+      block.className = 'card-block';
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = (i * 0.08) + 's';
+      card.innerHTML = `
+        <div class="side before">${escapeHtml(item.original)}</div>
+        <div class="arrow">→</div>
+        <div class="side after">${escapeHtml(item.rewritten)}</div>
+      `;
+      block.appendChild(card);
+
+      if (item.note) {
+        const note = document.createElement('div');
+        note.className = 'note';
+        note.textContent = item.note;
+        block.appendChild(note);
+      }
+
+      cardsEl.appendChild(block);
+    });
+
+    results.style.display = 'block';
+  } catch (err) {
+    errorBox.textContent = err.message || 'Something went wrong. Try again.';
+    errorBox.style.display = 'block';
+  } finally {
+    runBtn.disabled = false;
+    loading.classList.remove('active');
+  }
+});
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
